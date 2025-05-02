@@ -1,0 +1,9 @@
+Flask
+Flask-SQLAlchemy
+python-dotenv
+requests
+psycopg2-binary # O el driver de tu base de datos
+python-dateutil
+numpy # Si realmente lo usas, si no, quítalo
+# Añade otras dependencias como gunicorn si es para producción
+gunicorn
