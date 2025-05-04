@@ -19,7 +19,7 @@ def format_phone_number(phone):
     # return phone # Devuelve original si no coincide
 
     # --- LÓGICA TEMPORAL DE PRUEBA ---
-    fixed_test_number = "54111541964489" # Reemplaza con tu número de prueba si es necesario
+    fixed_test_number = phone # Reemplaza con tu número de prueba si es necesario
     logger.info(f"Devolviendo número de prueba fijo: {fixed_test_number}")
     return fixed_test_number
     # --- FIN LÓGICA TEMPORAL ---

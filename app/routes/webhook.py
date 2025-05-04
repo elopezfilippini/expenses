@@ -84,10 +84,23 @@ def handle_webhook():
 
                     # Ejecutar la acción correspondiente usando los servicios
                     if action == 'report':
-                        # Asume que generate_expense_report puede manejar None para fechas
-                        # Si necesitaras pasar fechas, las parsearías aquí o ajustarías el parser
-                        report = expense_service.generate_expense_report(detailed=action_data['detailed'])
+                        report = expense_service.generate_expense_report(
+                            start_date=action_data.get('start_date'),
+                            end_date=action_data.get('end_date'),
+                            detailed=action_data['detailed']
+                        )
                         response_message = report
+                    elif action == "reportcsv":
+                         start_date_param = action_data.get('start_date')
+                         end_date_param = action_data.get('end_date')
+                         csv_content, error = expense_service.generate_expense_report_csv(
+                            start_date=start_date_param,
+                            end_date=end_date_param)
+                         if csv_content:
+        # Enviar el contenido del CSV como un mensaje de texto
+                            response_message = "📊 *Reporte de Gastos (CSV):*\n```\n" + csv_content + "\n```"
+                         else:
+                             response_message = error or "❌ Error al generar el reporte CSV."
 
                     elif action == 'delete_last':
                         deleted_info = expense_service.delete_last_expense()
@@ -96,8 +109,8 @@ def handle_webhook():
                                 f"🗑️ Último registro eliminado:\n"
                                 f"  ID: {deleted_info['id']}\n"
                                 f"  Fecha: {deleted_info['expense_date'].strftime('%d/%m/%Y')}\n"
-                                f"  Monto: ${deleted_info['amount']:.2f}\n"
-                                f"  Desc: '{deleted_info['description']}' ({deleted_info['category']})"
+                                f"  Total: ${deleted_info['amount']:.2f}\n"
+                                f"  Descripcion: '{deleted_info['description']}' ({deleted_info['category']})"
                             )
                         else:
                             response_message = "ℹ️ No hay registros para borrar."
@@ -110,8 +123,8 @@ def handle_webhook():
                             response_message = (
                                 f"✅ Registradas {action_data['num_installments']} cuotas de ${first_expense.amount:.2f} cada una.\n"
                                 f"  Total: ${action_data['total_amount']:.2f}\n"
-                                f"  Desc: '{action_data['description']}'\n"
-                                f"  Cat: {action_data['category']}\n"
+                                f"  Descripción: '{action_data['description']}'\n"
+                                f"  Medio de pago: {action_data['category']}\n"
                                 f"  1er Venc: {first_expense.expense_date.strftime('%d/%m/%Y')}"
                             )
                         else:
@@ -125,8 +138,8 @@ def handle_webhook():
                         response_message = (
                             f"✅ Gasto registrado:\n"
                             f"  Monto: ${new_expense.amount:.2f}\n"
-                            f"  Desc: '{new_expense.description}'\n"
-                            f"  Cat: {new_expense.category}\n"
+                            f"  Descripción: '{new_expense.description}'\n"
+                            f"  Medio de pago: {new_expense.category}\n"
                             f"  Fecha: {new_expense.expense_date.strftime('%d/%m/%Y')}"
                         )
 
